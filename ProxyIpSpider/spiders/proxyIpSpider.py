@@ -1,5 +1,15 @@
 # -*- coding: utf-8
 """
+爬取免费代理IP信息 【附带IP有效性校验脚本 -> 详见 ../script/iPValidityCheck.py】
+
+数据存储在MySQL表中, 结构如下所示:
+CREATE TABLE `proxy_ip_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `proxy_ip` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5085 DEFAULT CHARSET=utf8mb4;
+
+
 @Author YH YR
 @Time 2018/10/24 15:16
 """
@@ -7,6 +17,7 @@ from scrapy import Request, Selector
 from scrapy.spiders import CrawlSpider
 
 from ProxyIpSpider.utils.mysqlUtil import MysqlUtil
+from ProxyIpSpider.settings import *
 
 
 class ProxyIpSpider(CrawlSpider):
@@ -14,13 +25,9 @@ class ProxyIpSpider(CrawlSpider):
 
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
-        self.mysql = MysqlUtil('localhost', 'root', 'root', 'cloud_music_db', 3306)
+        self.mysql = MysqlUtil(host, user_name, pass_word, db_name, port)
         self.table_name = 'proxy_ip_info'
 
-        """
-        爬取主流免费代理网站下的高匿代理Ip信息
-        为了提升爬取和校验效率,此处只获取并持久化IP信息,校验详见 script/IPValidityCheck.py
-        """
         # 三一代理
         self.proxy31_url_list = ['http://31f.cn/http-proxy/', 'http://31f.cn/https-proxy/']
 

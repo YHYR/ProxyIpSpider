@@ -19,8 +19,9 @@ import requests
 
 from ProxyIpSpider.utils.mysqlUtil import MysqlUtil
 from ProxyIpSpider.utils.user_agents import agents
+from ProxyIpSpider.settings import *
 
-mysql = MysqlUtil('localhost', 'root', 'root', 'cloud_music_db', 3306)
+mysql = MysqlUtil(host, user_name, pass_word, db_name, port)
 
 
 class IPValidityCheck:
@@ -59,13 +60,11 @@ def proxy_ip_check(check_ip, auto_increase_id, check_timeout=10):
     :return:
     """
     delete_sql = 'delete from proxy_ip_info where id = {0}'.format(auto_increase_id)
-    url = 'http://music.163.com/api/artist/top?offset=0&limit=100&total=false'
     proxies = {'http': check_ip}
     agent = random.choice(agents)
-    header = {'Referer': 'https://music.163.com/',
-              'User-Agent': agent}
+    header = {'Referer': 'https://music.163.com/', 'User-Agent': agent}
     try:
-        proxy_response = requests.get(url, proxies=proxies, headers=header, timeout=check_timeout)
+        proxy_response = requests.get(request_check_url, proxies=proxies, headers=header, timeout=check_timeout)
         if proxy_response.status_code == 200:
             print('Valid IP: {0}'.format(check_ip))
         else:
@@ -77,5 +76,4 @@ def proxy_ip_check(check_ip, auto_increase_id, check_timeout=10):
 
 
 if __name__ == '__main__':
-    action = IPValidityCheck()
-    action.run()
+    IPValidityCheck.run()
